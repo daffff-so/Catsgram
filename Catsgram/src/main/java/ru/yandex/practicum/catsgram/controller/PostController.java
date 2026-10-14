@@ -4,6 +4,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.catsgram.exception.ConditionsNotMetException;
+import ru.yandex.practicum.catsgram.exception.ParameterNotValidException;
 import ru.yandex.practicum.catsgram.service.PostService;
 import ru.yandex.practicum.catsgram.model.Post;
 import ru.yandex.practicum.catsgram.util.SortOrder;
@@ -29,7 +30,17 @@ public class PostController {
         SortOrder sortOrder = SortOrder.from(sort);
 
         if (sortOrder == null) {
-            throw new ConditionsNotMetException("Параметр sort должен иметь значение asc или desc");
+            throw new ParameterNotValidException("sort", "Параметр sort должен иметь значение asc или desc");
+        }
+
+        if (size <= 0) {
+            throw new ParameterNotValidException("size",
+                    "Некорректный размер выборки. Размер должен быть больше нуля");
+        }
+
+        if (from < 0) {
+            throw new ParameterNotValidException("from",
+                    "Некорректное количество элементов. Должно быть не меньше нуля");
         }
 
         return postService.findAll(sortOrder, from, size);
